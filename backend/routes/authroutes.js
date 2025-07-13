@@ -4,7 +4,7 @@ const router = express.Router();
 // Register route
 router.post('/register',register);
 // Login route
-router.post('login',login)
+router.post('/login',login)
 // Get user route
 // router.get('/getuser',geuser);
 // Export the router

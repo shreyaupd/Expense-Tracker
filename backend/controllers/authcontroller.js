@@ -53,6 +53,31 @@ const register = async (req, res) => {
     res.status(500).json({ message: "Something went wrong" });
   }
 };
-const login=async (req, res) => {}
-const geuser=async (req, res) => {}
- export { register, login, geuser };
+const login=async (req, res) => {
+  const {email,password}=req.body;
+  if(!email || !password){
+    return res.status(400).json({message:"Please fill all the fields"});
+  }
+  try{
+    const user=await User.findOne({email})
+    if(!user){
+      return res.status(400).json({message:"User does not exist"});
+    }
+    const isMatch=await user.comparePassword(password);
+    if(!isMatch){
+      return res.status(400).json({message:"Invalid credentials"});
+    }
+
+     const { password: _, ...userWithoutPassword } = user.toObject();
+     res.status(200).json({
+      id:user._id,
+      user,
+      token:generateToken(user),
+     });
+  } catch(error){
+    res.status(500).json({message:"Something went wrong"});
+  }
+}
+
+const getuser=async (req, res) => {}
+ export { register, login, getuser };
