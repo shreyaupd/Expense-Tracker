@@ -1,9 +1,13 @@
 import express from 'express';
 import dbconnect from './config/db.js';
 import authRoutes from './routes/authroutes.js'; 
+import path from 'path';
+import { fileURLToPath } from 'url';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 dotenv.config({ path: './.env' });
 
 const app = express();
@@ -14,8 +18,8 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-app.use("/api/v1/auth", authRoutes); // ✅ FIXED
-
+app.use("/api/v1/auth", authRoutes); 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const PORT = process.env.PORT || 9000;
 
 dbconnect()
