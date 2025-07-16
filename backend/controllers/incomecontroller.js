@@ -1,20 +1,20 @@
 import Income from '../models/income.js';
-import User from '../models/user.js';
 import xlsx from 'xlsx';
 const addincome = async (req, res) => {
     const userId = req.user.id;
-    const { amount, icon, data } = req.body;
+    const { amount, icon, date, source } = req.body;
     try {
-        if (!amount || !icon || !data) {
+        if (!amount || !source || !date) {
             return res.status(400).json({ message: "All fields required" })
         }
         const newIncome = new Income({
             userId,
             amount,
+            source,
             icon,
             date: new Date(data)
         });
-        await income.save() //await because it needs to connect to the database
+        await newIncome.save() //await because it needs to connect to the database
         res.status(200).json(newIncome)
     }
     catch (err) {
@@ -25,6 +25,7 @@ const getincome = async (req, res) => {
     const userId = req.user.id;
     try {
         const income = await Income.find({ userId }).sort({ date: -1 }) //date -1 means latest date first
+        res.status(200).json(income);
     }
     catch (err) {
         res.status(500).json({ message: "Server error" })

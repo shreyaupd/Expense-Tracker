@@ -5,6 +5,10 @@ const IncomeSchema=new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    source: {
+        type: String,
+        required: true
+    },
     icon:{
         type:'string'
     },
