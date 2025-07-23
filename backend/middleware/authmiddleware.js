@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/user.js';
 export const protect = async (req, res, next) => {
- let token=req.header.authorization? req.header.authorization.split(" ")[1] : null;
+ let token=req.headers.authorization? req.headers.authorization.split(" ")[1] : null;
  if(!token){
   return res.status(401).json({message:"Unauthorized access"});
  }

@@ -2,9 +2,9 @@ import Expense from '../models/expense.js';
 import xlsx from 'xlsx';
 const addexpense = async (req, res) => {
     const userId = req.user.id;
-    const { amount, icon, data, category} = req.body;
+    const { amount, icon, date, category} = req.body;
     try {
-        if (!amount || !category || !data) {
+        if (!amount || !category || !date) {
             return res.status(400).json({ message: "All fields required" })
         }
         const newExpense = new Expense({
@@ -12,7 +12,7 @@ const addexpense = async (req, res) => {
             amount,
             icon,
             category,
-            date: new Date(data)
+            date: new Date(date)
         });
          await newExpense.save(); //await because it needs to connect to the database
         res.status(200).json(newExpense);
@@ -33,9 +33,11 @@ const getexpense = async (req, res) => {
     }
 }
 const deleteexpense = async (req, res) => {
-    const userId = req.user.id;
     try {
-        await Expense.findByIdAndDelete(req.params.id);
+        await Expense.findByIdAndDelete({
+            _id: req.params.id,
+            userId: req.user.id
+        });
         res.status(200).json({ message: "Expense deleted successfully" })
     }
     catch (err) {

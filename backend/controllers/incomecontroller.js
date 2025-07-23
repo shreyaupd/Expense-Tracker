@@ -12,9 +12,9 @@ const addincome = async (req, res) => {
             amount,
             source,
             icon,
-            date: new Date(data)
+            date: new Date(date)
         });
-        await newIncome.save() //await because it needs to connect to the database
+        await newIncome.save(); //await because it needs to connect to the database
         res.status(200).json(newIncome)
     }
     catch (err) {
@@ -32,15 +32,22 @@ const getincome = async (req, res) => {
     }
 }
 const deleteincome = async (req, res) => {
-    const userId = req.user.id;
     try {
-        await Income.findByIdAndDelete(req.params.id);
-        res.status(200).json({ message: "Income deleted successfully" })
+        const deleted = await Income.findOneAndDelete({
+            _id: req.params.id,
+            userId: req.user.id 
+        });
+
+        if (!deleted) {
+            return res.status(404).json({ message: "Income not found or not yours" });
+        }
+
+        res.status(200).json({ message: "Income deleted successfully" });
+    } catch (err) {
+        res.status(500).json({ message: "Server error" });
     }
-    catch (err) {
-        res.status(500).json({ message: "Server error" })
-    }
-}
+};
+
 const downloadincome = async (req, res) => {
     const userId = req.user.id;
     try {

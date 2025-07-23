@@ -1,8 +1,8 @@
 import Income from '../models/income.js';
 import Expense from '../models/expense.js';
-import { Types } from 'mongoose';
+import { Types } from 'mongoose'; 
 
-const dashboardData = async (req, res) => {
+export const dashboardData = async (req, res) => {
   try {
     const userId = req.user.id;
     const userObjectId = new Types.ObjectId(String(userId));
@@ -79,4 +79,3 @@ const dashboardData = async (req, res) => {
   }
 };
 
-export default dashboardData;
