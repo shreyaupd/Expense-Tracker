@@ -1,35 +1,75 @@
 import React from 'react'
 import Input from '../input/Input'
 import AuthLayouts from '../Components/Layouts/AuthLayouts'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router' // added useNavigate for redirection
+import axiosinstance from '../../Utils/axiosinstance'
+import { API_PATHS } from '../../Utils/apiPath'
+
 const Login = () => {
+  // State for form fields
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+
+  // State for error messages
   const [emailError, setEmailError] = React.useState('');
   const [passwordError, setPasswordError] = React.useState('');
 
-  const handleSubmit = (e) => {
+  // Navigation hook
+  const navigate = useNavigate();
+
+  // Form submission handler
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Reset errors
+
+    // Reset errors before validation
     setEmailError('');
     setPasswordError('');
-    
+
+    let isValid = true;
+
     // Email validation
     if (!email) {
       setEmailError('Email is required');
+      isValid = false;
     } else if (!email.includes('@') || !email.includes('.')) {
       setEmailError('Please enter a valid email address');
+      isValid = false;
     }
-    
+
     // Password validation
     if (!password) {
       setPasswordError('Password is required');
+      isValid = false;
     } else if (password.length < 6) {
       setPasswordError('Password should have at least 6 characters');
+      isValid = false;
     }
-    
-  }
+
+    // Stop if validation failed
+    if (!isValid) return;
+
+    // API call
+    try {
+      const response = await axiosinstance.post(API_PATHS.AUTH.LOGIN, {
+        email,
+        password
+      });
+
+      const { token, user } = response.data;
+
+      // Save token in localStorage for future requests
+      localStorage.setItem('token', token);
+
+      // Navigate to dashboard after successful login
+      navigate('/dashboard');
+    } catch (error) {
+      if (error.response && error.response.data.message) {
+        setEmailError(error.response.data.message);
+      } else {
+        setEmailError('An unexpected error occurred. Please try again later.');
+      }
+    }
+  };
 
   return (
     <AuthLayouts>
@@ -38,6 +78,7 @@ const Login = () => {
         <p className='text-[15px] text-gray-700 mt-4'>Enter your credentials</p>
 
         <form onSubmit={handleSubmit}>
+          {/* Email input */}
           <div className="mb-4">
             <Input
               type="email"
@@ -50,6 +91,7 @@ const Login = () => {
             {emailError && <p className='text-red-500 text-xs mt-1'>{emailError}</p>}
           </div>
 
+          {/* Password input */}
           <div className="mb-4">
             <Input
               type="password"
@@ -62,6 +104,7 @@ const Login = () => {
             {passwordError && <p className='text-red-500 text-xs mt-1'>{passwordError}</p>}
           </div>
 
+          {/* Submit button */}
           <div>
             <button 
               type="submit"
@@ -71,6 +114,7 @@ const Login = () => {
             </button>
           </div>
 
+          {/* Sign up link */}
           <p className='mt-4 text-center text-sm text-gray-600'>
             Don't have an account?
             <Link to="/SignUp" className='text-blue-600 px-2 hover:underline'>
